@@ -1,0 +1,13 @@
+{
+  "name" : "redestab",
+  "url" : "http://github.com/MaZderMind/redestab",
+  "author" : "Peter Körner <peter@mazdermind.de>",
+  "license" : "BSD Whatever",
+  "dependencies" : [
+    "node-static",
+    "socket.io",
+    "optimist",
+    "less"
+  ],
+  "version" : "0.0.1-alpha"
+}

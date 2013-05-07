@@ -1,0 +1,169 @@
+/*
+@import url(http://weloveiconfonts.com/api/?family=entypo);
+@import url(http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps);
+*/
+
+html, body {
+	padding: 0;
+	margin: 0;
+	min-height: 100%;
+}
+
+body {
+	background: rgb(242,245,246); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgb(242,245,246) 0%, rgb(227,234,237) 37%, rgb(200,215,220) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(242,245,246)), color-stop(37%,rgb(227,234,237)), color-stop(100%,rgb(200,215,220))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgb(242,245,246) 0%,rgb(227,234,237) 37%,rgb(200,215,220) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgb(242,245,246) 0%,rgb(227,234,237) 37%,rgb(200,215,220) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgb(242,245,246) 0%,rgb(227,234,237) 37%,rgb(200,215,220) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgb(242,245,246) 0%,rgb(227,234,237) 37%,rgb(200,215,220) 100%); /* W3C */
+	background-position: fixed;
+
+	font-family: sans-serif;
+	color: #454545;
+	position: relative;
+}
+
+a {
+	color: darken(#909B9F, 20%);
+}
+
+input:focus,
+textarea:focus {
+	outline: 0;
+	-moz-outline-style: none;
+}
+
+.canvas {
+	margin: 30px;
+/*	background: rgba(0, 0, 0, 7%);
+	padding: 30px;
+	border-radius: 10px;
+	box-shadow: 0 0 15px white;
+*/
+}
+/*
+h1 {
+	font-family: 'Oleo Script Swash Caps', cursive;
+	font-size: 100px;
+	margin: 10px;
+	padding: 10px;
+	background-color: #243B42;
+	-webkit-background-clip: text;
+	-moz-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	text-shadow: rgba(255,255,255,0.5) 0px 3px 3px;
+}
+*/
+
+.insetText() {
+	color: #909B9F;
+	text-shadow: 0 -1px 1px #333333, 1px -2px 1px #333333, 0 1px 1px #FFFFFF;
+}
+
+h1 {
+	font-family: 'Oleo Script Swash Caps', cursive;
+	font-size: 100px;
+	font-weight: normal;
+	margin: 0;
+	padding: 10px;
+	.insetText();
+
+	-webkit-transform: rotate(270deg);
+	transform: rotate(270deg);
+	position: absolute;
+	left: -206px;
+	top: 210px;
+}
+
+@frameSz: 150px;
+.frame {
+
+	width: @frameSz;
+	height: @frameSz;
+	display: block;
+	overflow: hidden;
+	border-radius: @frameSz / 2 + 10px;
+	border-top: 8px solid #999999;
+	border-left: 8px solid #999999;
+	border-bottom: 8px solid #454545;
+	border-right: 8px solid #454545;
+	-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+	-moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+}
+
+#enter {
+	text-align: center;
+	.frame {
+		font-size: @frameSz - 12px;
+		text-align: center;
+
+		font-family: 'entypo', sans-serif;
+		.insetText();
+
+		margin: 0 auto 50px auto;
+	}
+
+	@boxSz: 300px;
+	form {
+		width: @boxSz;
+		margin: auto;
+		background: rgba(0, 0, 0, 7%);
+		padding: 30px;
+		border-radius: 10px;
+		box-shadow: 0 0 5px white;
+	}
+	input, label {
+		display: block;
+	}
+
+	label {
+		text-align: left;
+		line-height: 27px;
+	}
+	input {
+		width: @boxSz - 10px;
+		margin-bottom: 25px;
+		border: 0px solid transparent;
+		background: #909B9F;
+		box-shadow: -1px -1px 2px #333333, 0 1px 2px #FFFFFF;
+		padding: 5px;
+		position: relative;
+	}
+
+	button {
+		background: #CDDBDF;
+		border: 0px solid transparent;
+		padding: 10px 20px;
+		font-size: 30px;
+
+		background: #909B9F;
+		box-shadow: 0 0 3px #333333;
+		border-radius: 10px;
+		color: #595959	;
+
+		margin-top: 20px;
+	}
+	button.enabled {
+		color: #353535;
+		cursor: pointer;
+	}
+	button.hover {
+		box-shadow: 0 0 20px #ffffff;
+	}
+	p {
+		margin: -20px 0 10px 0;
+		text-align: left;
+		font-size: 10px;
+	}
+}
+
+#faces {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background: red;
+	display: none;
+}
