@@ -6,35 +6,31 @@
 
 		<link rel="stylesheet" href="http://weloveiconfonts.com/api/?family=entypo" />
 		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps" />
-		<link rel="stylesheet" href="skin.css" />
+		<link rel="stylesheet" href="/skin.css" />
 
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 		<script src="http://cdn.jsdelivr.net/jquery.cookie/1.3.1/jquery.cookie.js"></script>
-		<script src="logic.js"></script>
+		<script src="/enter.js"></script>
 	</head>
-	<body>
-		<div class="canvas">
-			<h1>Der Redestab</h1>
-			<noscript>
-				<p class="noscript">No Javascript, no fun.</p>
-			</noscript>
-			<div id="enter">
-				<div class="frame">
-					<div class="icon entypo-megaphone"></div>
-				</div>
-				<form action="javascript:;">
-					<label class="topic">Name des Gesprächs
-						<input type="text" value="" />
-					</label>
-
-					<label class="user">Deine E-Mail-Adresse*
-						<input type="email" value="" />
-					</label>
-					<p>*für <a href="https://de.gravatar.com/">gravatar.com</a></p>
-
-					<button type="submit">Ich will mitreden!</button>
-				</form>
-			</div>
+	<body class="enter">
+		<h1>Der Redestab</h1>
+		<noscript>
+			<p class="noscript">No Javascript, no fun.</p>
+		</noscript>
+		<div class="frame">
+			<div class="icon entypo-megaphone"></div>
 		</div>
+		<form action="javascript:;">
+			<label class="topic">Name des Gesprächs
+				<input type="text" value="" />
+			</label>
+
+			<label class="user">Deine E-Mail-Adresse*
+				<input type="email" value="" />
+			</label>
+			<p>*für <a href="https://de.gravatar.com/">gravatar.com</a></p>
+
+			<button type="submit">Ich will mitreden!</button>
+		</form>
 	</body>
 </html>

@@ -18,6 +18,14 @@ http.ServerResponse.prototype.endError = function(code, msg) {
 	return this;
 }
 
+String.prototype.startsWith = function(prefix) {
+	return (this.length >= prefix.length) && this.indexOf(prefix) === 0;
+}
+
+String.prototype.endsWith = function(suffix) {
+	return (this.length >= suffix.length) && this.lastIndexOf(suffix) === this.length - suffix.length;
+}
+
 http.createServer(function (request, response) {
 
 	if(handleApiCalls(request, response)) return;
@@ -35,9 +43,12 @@ http.createServer(function (request, response) {
 function handleApiCalls(request, response) {
 	var urldata = url.parse(request.url, true);
 
-	switch(urldata.pathname) {
-		case '/gravatar':
+	switch(true) {
+		case(urldata.pathname == '/gravatar'):
 			return handleGravatar(request, response, urldata);
+
+		case (urldata.pathname.startsWith('/mitreden/bei/')):
+			return file.serveFile('/faces.html', 200, {}, request, response);
 
 		default:
 			return false;

@@ -1,13 +1,12 @@
 $(function() {
 	var
-		$enter = $('#enter'),
-		$faces = $('#faces'),
-		$enterButton = $enter.find('button'),
-		$enterTxts = $enter.find('input'),
-		$topicTxt = $enter.find('.topic input'),
-		$userTxt = $enter.find('.user input'),
-		$enterFrame = $enter.find('.frame'),
-		$enterIcon = $enterFrame.find('.icon'),
+		$enterButton = $('.enter button'),
+		$enterForm = $('.enter form'),
+		$enterTxts = $('.enter input'),
+		$topicTxt = $('.enter .topic input'),
+		$userTxt = $('.enter .user input'),
+		$enterFrame = $('.enter .frame'),
+		$enterIcon = $('.enter .frame .icon'),
 		cookieOpts = {path: '/'};
 
 	$userTxt.val($.cookie('user') || '');
@@ -31,7 +30,7 @@ $(function() {
 			method: 'GET',
 			dataType: 'text',
 			success: function(hash) {
-				$.ajax({
+/*				$.ajax({
 					url: 'http://www.gravatar.com/'+hash+'.json',
 					method: 'GET',
 					dataType: 'jsonp',
@@ -39,7 +38,7 @@ $(function() {
 						console.log(info);
 					}
 				});
-
+*/
 				$enterIcon.css('display', 'none');
 				$enterFrame.css('background-image', 'url(http://www.gravatar.com/avatar/'+hash+'?s=150&d=identicon&r=x)');
 			}
@@ -48,16 +47,10 @@ $(function() {
 
 	$enterButton.on('mouseenter mouseleave', function(e) {
 		$enterButton.toggleClass('hover', e.type == 'mouseenter' && $enterButton.hasClass('enabled'));
-	}).on('click', function() {
-		$enter.animate({
-			opacity: 0
-		}, {
-			complete: function() {
-				$(this).css('display', 'none');
-				$faces.css({'display': 'block', 'opacity': 0}).animate({
-					'opacity': 1
-				});
-			}
-		})
+	});
+
+	$enterForm.on('submit', function(e) {
+		window.location.pathname = '/mitreden/bei/'+encodeURI($topicTxt.val());
+		e.preventDefault();
 	});
 });
