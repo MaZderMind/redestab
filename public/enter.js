@@ -7,7 +7,7 @@ $(function() {
 		$userTxt = $('.enter .user input'),
 		$enterFrame = $('.enter .frame'),
 		$enterIcon = $('.enter .frame .icon'),
-		cookieOpts = {path: '/'};
+		cookieOpts = {path: '/', expires: 360};
 
 	$userTxt.val($.cookie('user') || '');
 	$topicTxt.val($.cookie('topic') || '');
