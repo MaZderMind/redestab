@@ -46,7 +46,14 @@ var server = http.createServer(function(request, response) {
 
 }).listen(8080);
 
-io.listen(server).sockets.on('connection', function(socket) {
+var srv = io.listen(server);
+srv.configure(function() {
+
+	srv.enable('browser client minificatsrvn');  // send minified client
+	srv.enable('browser client gzip');          // gzip the file
+	srv.set('log level', 1);                    // reduce logging
+
+}).sockets.on('connection', function(socket) {
 	var ident;
 	socket.on('disconnect', function () {
 		if(!ident) return;
