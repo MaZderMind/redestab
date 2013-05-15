@@ -92,6 +92,10 @@ srv.configure(function() {
 			topic.sockets[i].emit('faces', topic.faces);
 		};
 	});
+
+	socket.on('want', function() {
+		
+	});
 });
 
 function handleApiCalls(request, response) {

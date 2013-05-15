@@ -2,9 +2,10 @@ var
 	path = window.location.pathname,
 	topic = path.split('/')[3],
 	email = $.cookie('user'),
+	max_reconnects = 3,
 	socket = io.connect(window.location.protocol+'//'+window.location.host, {
 		'reconnection limit': 5000,
-		'max reconnection attempts': 30
+		'max reconnection attempts': max_reconnects
 	});
 
 
@@ -41,12 +42,14 @@ $(function() {
 	});
 
 	socket.on('reconnecting', function () {
-		$disconnected.find('.cnt').text(++retrycnt);
+		console.log('x');
+		if(retrycnt >= max_reconnects)
+			$disconnected.find('.cnt').text('Ω');
+		else
+			$disconnected.find('.cnt').text(++retrycnt);
 	});
 
-	socket.on('reconnect_failed', function () {
-		$disconnected.find('.cnt').text('Ω');
+	$submit.on('click', function() {
+		socket.emit('want');
 	});
-
-	$submit.on('click', function() {});
 });
