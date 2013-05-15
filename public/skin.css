@@ -136,6 +136,10 @@ h1 {
   display: inline-block;
   margin: 0 5px;
   padding: 15px;
+  vertical-align: top;
+}
+.faces .face .frame {
+  margin: 0 auto;
 }
 .faces .face.talking {
   background-color: #599E56;
