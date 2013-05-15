@@ -2,7 +2,7 @@ var
 	path = window.location.pathname,
 	topic = path.split('/')[3],
 	email = $.cookie('user'),
-	max_reconnects = 10,
+	max_reconnects = 30,
 	socket = io.connect(window.location.protocol+'//'+window.location.host, {
 		'reconnection limit': 5000,
 		'max reconnection attempts': max_reconnects
