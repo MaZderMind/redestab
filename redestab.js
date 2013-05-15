@@ -89,15 +89,6 @@ function handleApiCalls(request, response) {
 	}
 }
 
-function parseCookies(request) {
-	var cookies = {};
-	request.headers['cookie'] && request.headers['cookie'].split(';').forEach(function(cookie) {
-		var parts = cookie.split('=');
-		cookies[ parts[0].trim() ] = (parts[1] || '').trim();
-	});
-	return cookies;
-}
-
 function mail2gravatarHash(mail) {
 	if(!mail || mail.length == 0)
 		return '-';

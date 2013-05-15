@@ -14,6 +14,7 @@ $(function() {
 	$facebar.html('');
 
 	socket.on('status', function(status) {
+		console.log(status);
 		for (var i = 0; i < status.faces.length; i++) {
 			var $face = $faceTpl.clone();
 			$face.find('.frame').css('background-image', 'url(http://www.gravatar.com/avatar/'+status.faces[i].hash+'?s=150&d=identicon&r=x)');
