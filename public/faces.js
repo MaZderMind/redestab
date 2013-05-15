@@ -17,10 +17,12 @@ $(function() {
 		for (var i = 0; i < faces.length; i++) {
 			var $face = $faceTpl.clone();
 			$face.find('.frame').css('background-image', 'url(http://www.gravatar.com/avatar/'+faces[i].hash+'?s=150&d=identicon&r=x)');
-			$face.find('.name').text(faces[i].name);
+			$face.find('.name').text(faces[i].email);
 			$face.find('.state').text(faces[i].state);
 			$face.appendTo($facebar);
 		};
 	});
 	socket.emit('ident', {'topic': topic, 'email': email});
+
+	//$facebar.on('click', '.')
 });

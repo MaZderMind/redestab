@@ -9,41 +9,43 @@ $(function() {
 		$enterIcon = $('.enter .frame .icon'),
 		cookieOpts = {path: '/', expires: 360};
 
-	console.log($.cookie);
 	$userTxt.val($.cookie('user') || '');
 	$topicTxt.val($.cookie('topic') || '');
+
+	var gravatarTimeout;
 
 	$enterTxts.on('keydown keyup', function() {
 		var valid = $topicTxt.val().length > 0 && $userTxt.val().length > 0;
 		$enterButton.toggleClass('enabled', valid);
 		if(!valid) $enterButton.removeClass('hover');
+
+		clearTimeout(gravatarTimeout);
+		if($userTxt.val().length == 0) {
+			$enterIcon.css('display', 'block');
+			$enterFrame.css('background-image', '');
+		}
+		else {
+			gravatarTimeout = setTimeout(function() {
+				$.ajax({
+					url: '/gravatar',
+					data: {
+						email: $userTxt.val()
+					},
+					method: 'GET',
+					dataType: 'text',
+					success: function(hash) {
+						$enterIcon.css('display', 'none');
+						$enterFrame.css('background-image', 'url(http://www.gravatar.com/avatar/'+hash+'?s=150&d=identicon&r=x)');
+					}
+				});
+			}, 250);
+		}
 	}).on('change', function() {
 		if($userTxt.val().length == 0) return;
 
 		$.cookie('user', $userTxt.val(), cookieOpts);
 		$.cookie('topic', $topicTxt.val(), cookieOpts);
 
-		$.ajax({
-			url: '/gravatar',
-			data: {
-				email: $userTxt.val()
-			},
-			method: 'GET',
-			dataType: 'text',
-			success: function(hash) {
-/*				$.ajax({
-					url: 'http://www.gravatar.com/'+hash+'.json',
-					method: 'GET',
-					dataType: 'jsonp',
-					success: function(info) {
-						console.log(info);
-					}
-				});
-*/
-				$enterIcon.css('display', 'none');
-				$enterFrame.css('background-image', 'url(http://www.gravatar.com/avatar/'+hash+'?s=150&d=identicon&r=x)');
-			}
-		});
 	}).trigger('change').trigger('keydown');
 
 	$enterButton.on('mouseenter mouseleave', function(e) {
