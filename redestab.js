@@ -47,16 +47,42 @@ var server = http.createServer(function(request, response) {
 }).listen(8080);
 
 io.listen(server).sockets.on('connection', function(socket) {
-	socket.on('ident', function(ident) {
-		if(!topics[ident.topic])
-			topics[ident.topic] = {faces: [], sockets: []};
+	var ident;
+	socket.on('disconnect', function () {
+		if(!ident) return;
 
+		var topic = topics[ident.topic];
+		if(!topic) return;
+
+		topic.sockets.splice(topic.sockets.indexOf(socket), 1);
+		topic.faces.splice(topic.faces.indexOf(ident), 1);
+
+		console.log('user '+ident.email+' left topic '+ident.topic+' (still '+topic.sockets.length+' talking on that topic)');
+		if(topic.sockets.length == 0) {
+			console.log('destroying topic '+ident.topic);
+			delete topics[ident.topic];
+		}
+
+		for (var i = 0; i < topic.sockets.length; i++) {
+			topic.sockets[i].emit('faces', topic.faces);
+		};
+	});
+
+	socket.on('ident', function(_ident) {
+		ident = _ident;
+		if(!topics[ident.topic]) {
+			console.log('creating topic '+ident.topic)
+			topics[ident.topic] = {faces: [], sockets: []};
+		}
+
+		console.log('user '+ident.email+' entered topic '+ident.topic)
 		var topic = topics[ident.topic];
 		ident.hash = mail2gravatarHash(ident.email);
 		topic.faces.push(ident);
+		topic.sockets.push(socket);
 
 		for (var i = 0; i < topic.sockets.length; i++) {
-			topic.sockets[i].emit('status', topic);
+			topic.sockets[i].emit('faces', topic.faces);
 		};
 	});
 });

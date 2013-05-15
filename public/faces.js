@@ -11,15 +11,14 @@ $(function() {
 
 	$('title').text(topic + ' - ' + $('title').text());
 	$('h2').text(topic);
-	$facebar.html('');
 
-	socket.on('status', function(status) {
-		console.log(status);
-		for (var i = 0; i < status.faces.length; i++) {
+	socket.on('faces', function(faces) {
+		$facebar.html('');
+		for (var i = 0; i < faces.length; i++) {
 			var $face = $faceTpl.clone();
-			$face.find('.frame').css('background-image', 'url(http://www.gravatar.com/avatar/'+status.faces[i].hash+'?s=150&d=identicon&r=x)');
-			$face.find('.name').text(status.faces[i].name);
-			$face.find('.state').text(status.faces[i].state);
+			$face.find('.frame').css('background-image', 'url(http://www.gravatar.com/avatar/'+faces[i].hash+'?s=150&d=identicon&r=x)');
+			$face.find('.name').text(faces[i].name);
+			$face.find('.state').text(faces[i].state);
 			$face.appendTo($facebar);
 		};
 	});
