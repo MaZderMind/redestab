@@ -7,7 +7,9 @@ var
 $(function() {
 	var
 		$facebar = $('.facebar'),
-		$faceTpl = $facebar.find('.face').first().clone();
+		$faceTpl = $facebar.find('.face').first().clone(),
+		$submit = $('body > button'),
+		$disconnected = $('.disconnected');
 
 	$('title').text(topic + ' - ' + $('title').text());
 	$('h2').text(topic);
@@ -22,7 +24,15 @@ $(function() {
 			$face.appendTo($facebar);
 		};
 	});
-	socket.emit('ident', {'topic': topic, 'email': email});
 
-	//$facebar.on('click', '.')
+	socket.on('connect', function() {
+		$disconnected.css('display', 'none');
+		socket.emit('ident', {'topic': topic, 'email': email});
+	});
+
+	socket.on('disconnect', function() {
+		$disconnected.css('display', 'block');
+	});
+
+	$submit.on('click', function() {});
 });

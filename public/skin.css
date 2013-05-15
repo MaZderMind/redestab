@@ -172,3 +172,26 @@ h1 {
 .faces button:active {
   background: #abb4b7;
 }
+.disconnected {
+  background-color: #444;
+  opacity: 0.8;
+  position: fixed;
+  border-radius: 20px;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  z-index: 99999;
+  color: white;
+  /*display: none;*/
+
+}
+.disconnected .text {
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  height: 50px;
+  margin-top: -25px;
+  font-size: 45px;
+}
