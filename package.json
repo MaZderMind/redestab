@@ -7,7 +7,8 @@
     "node-static",
     "socket.io",
     "optimist",
-    "less"
+    "less",
+    "cookie"
   ],
   "version" : "0.0.1-alpha"
 }

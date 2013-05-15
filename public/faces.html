@@ -10,6 +10,7 @@
 
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 		<script src="http://cdn.jsdelivr.net/jquery.cookie/1.3.1/jquery.cookie.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
 		<script src="/faces.js"></script>
 	</head>
 	<body class="faces">
@@ -18,27 +19,12 @@
 		<noscript>
 			<p class="noscript">No Javascript, no fun.</p>
 		</noscript>
-		<div class="they">
-			<div class="face wants">
-				<div class="frame" style="background-image: url(http://www.gravatar.com/avatar/2d325c7f1dccd85419900e4b67d8b798?s=150&d=identicon&r=x)"></div>
-				<div class="name">peter@mazdermind.de</div>
-				<div class="state">Will Reden (#2)</div>
-			</div>
+		<div class="facebar">
 			<div class="face">
-				<div class="frame" style="background-image: url(http://www.gravatar.com/avatar/2d325c7f1dccd85419900e4b67d8b797?s=150&d=identicon&r=x)"></div>
-				<div class="name">Foo</div>
+				<div class="frame" style=""></div>
+				<div class="name"></div>
+				<div class="state"></div>
 			</div>
-			<div class="face talking">
-				<div class="frame" style="background-image: url(http://www.gravatar.com/avatar/2d325c7f1dccd85419900e4b67d8b796?s=150&d=identicon&r=x)"></div>
-				<div class="name">Foo</div>
-				<div class="state">Redet seit 10:30</div>
-			</div>
-			<div class="face wants">
-				<div class="frame" style="background-image: url(http://www.gravatar.com/avatar/2d325c7f1dccd85419900e4b67d8b795?s=150&d=identicon&r=x)"></div>
-				<div class="name">Foo</div>
-				<div class="state">Will Reden (#1)</div>
-			</div>
-			<!--div class="nobody">Niemand da.</div-->
 		</div>
 
 		<button type="submit">Ich will reden!</button>

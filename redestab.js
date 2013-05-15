@@ -3,17 +3,22 @@ var
 	file = new StaticServer('./public'),
 	path = require('path'),
 	url = require('url'),
-	async = require('async'),
 	fs = require('fs'),
 	less = require('less'),
 	http = require('http'),
 	argv = require('optimist').argv,
-	crypto = require('crypto');
+	crypto = require('crypto'),
+	io = require('socket.io'),
+	cookie = require('cookie'),
+	topics = {};
 
-http.ServerResponse.prototype.endError = function(code, msg) {
-	this.writeHead(code, {
-		'Content-Type': 'text/plain'
-	});
+http.ServerResponse.prototype.endError = function(code, msg, headers) {
+	headers = headers || {};
+
+	if(!headers['Content-Type'])
+		headers['Content-Type'] = 'text/plain';
+
+	this.writeHead(code, headers);
 	this.end(msg);
 	return this;
 }
@@ -26,11 +31,12 @@ String.prototype.endsWith = function(suffix) {
 	return (this.length >= suffix.length) && this.lastIndexOf(suffix) === this.length - suffix.length;
 }
 
-http.createServer(function (request, response) {
+var server = http.createServer(function(request, response) {
 
 	if(handleApiCalls(request, response)) return;
 	//if(handleSocketIo(request, response)) return;
 
+	console.log(request.url+' -> file');
 	if(argv.develop) {
 		handleLessRecompile(request, response, function() {
 			file.serve(request, response);
@@ -40,14 +46,42 @@ http.createServer(function (request, response) {
 
 }).listen(8080);
 
+io.listen(server).sockets.on('connection', function(socket) {
+	socket.on('ident', function(ident) {
+		if(!topics[ident.topic])
+			topics[ident.topic] = {faces: [], sockets: []};
+
+		var topic = topics[ident.topic];
+		ident.hash = mail2gravatarHash(ident.email);
+		topic.faces.push(ident);
+
+		for (var i = 0; i < topic.sockets.length; i++) {
+			topic.sockets[i].emit('status', topic);
+		};
+	});
+});
+
 function handleApiCalls(request, response) {
 	var urldata = url.parse(request.url, true);
 
 	switch(true) {
 		case(urldata.pathname == '/gravatar'):
+			console.log(request.url+' -> gravatarHandler');
 			return handleGravatar(request, response, urldata);
 
 		case (urldata.pathname.startsWith('/mitreden/bei/')):
+			var
+				topic = urldata.pathname.split('/')[3],
+				cookies = request.headers['cookie'] ? cookie.parse(request.headers['cookie']) : {};
+
+			if(!cookies['user'] || cookies['user'] == '') {
+				var dsturl = 'http://'+request.headers['host']+'/'
+
+				console.log(request.url+' -> no user, redirect to '+dsturl);
+				return response.endError(307, 'Temporary Redirect, see '+dsturl, {'Location': dsturl, 'Set-Cookie': cookie.serialize('topic', topic, {path: '/'})});
+			}
+
+			console.log(request.url+' -> facesGui');
 			return file.serveFile('/faces.html', 200, {}, request, response);
 
 		default:
@@ -55,14 +89,31 @@ function handleApiCalls(request, response) {
 	}
 }
 
-function handleGravatar(request, response, urldata) {
-	var md5 = crypto.createHash('md5');
-	md5.update((urldata.query.email || '').trim().toLowerCase(), 'utf8');
+function parseCookies(request) {
+	var cookies = {};
+	request.headers['cookie'] && request.headers['cookie'].split(';').forEach(function(cookie) {
+		var parts = cookie.split('=');
+		cookies[ parts[0].trim() ] = (parts[1] || '').trim();
+	});
+	return cookies;
+}
 
+function mail2gravatarHash(mail) {
+	if(!mail || mail.length == 0)
+		return '-';
+
+	var md5 = crypto.createHash('md5');
+	md5.update(mail.trim().toLowerCase(), 'utf8');
+	return md5.digest('hex');
+}
+
+function handleGravatar(request, response, urldata) {
 	response.writeHead(200, {
 		'Content-Type': 'text'
 	});
-	response.end(md5.digest('hex'));
+	response.end(
+		mail2gravatarHash(urldata.query.email || '')
+	);
 }
 
 function handleLessRecompile(request, response, cb) {
@@ -77,7 +128,7 @@ function handleLessRecompile(request, response, cb) {
 		cssname = path.join('./public/', url),
 		lessname = path.join('./public/', path.dirname(url)+path.basename(url, '.css')+'.less');
 
-	console.log('recompiling ', lessname, ' -> ', cssname);
+	console.log('lessc: recompiling ', lessname, ' -> ', cssname);
 
 	// test if there is a less file
 	fs.exists(lessname, function(exists) {

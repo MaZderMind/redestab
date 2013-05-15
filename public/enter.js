@@ -9,6 +9,7 @@ $(function() {
 		$enterIcon = $('.enter .frame .icon'),
 		cookieOpts = {path: '/', expires: 360};
 
+	console.log($.cookie);
 	$userTxt.val($.cookie('user') || '');
 	$topicTxt.val($.cookie('topic') || '');
 
