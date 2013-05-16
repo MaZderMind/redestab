@@ -79,7 +79,7 @@ srv.configure(function() {
 		ident = _ident;
 		if(!topics[ident.topic]) {
 			console.log('creating topic '+ident.topic)
-			topics[ident.topic] = {faces: [], sockets: []};
+			topics[ident.topic] = {faces: [], sockets: [], stack: []};
 		}
 
 		console.log('user '+ident.email+' entered topic '+ident.topic)
@@ -94,7 +94,7 @@ srv.configure(function() {
 	});
 
 	socket.on('want', function() {
-		
+		console.log(ident.email+' wants to talk on topic '+ident.topic);
 	});
 });
 
@@ -105,6 +105,13 @@ function handleApiCalls(request, response) {
 		case(urldata.pathname == '/gravatar'):
 			console.log(request.url+' -> gravatarHandler');
 			return handleGravatar(request, response, urldata);
+
+		case(urldata.pathname == '/insight'):
+			if(request.socket.remoteAddress != '127.0.0.1' && request.socket.remoteAddress != '::1')
+				return response.endError(403, 'Du du du du du!! '+request.socket.remoteAddress);
+
+			console.log(request.url+' -> insightHandler');
+			return handleInsight(request, response, urldata);
 
 		case (urldata.pathname.startsWith('/mitreden/bei/')):
 			var
@@ -139,8 +146,26 @@ function handleGravatar(request, response, urldata) {
 	response.writeHead(200, {
 		'Content-Type': 'text'
 	});
-	response.end(
+	return response.end(
 		mail2gravatarHash(urldata.query.email || '')
+	);
+}
+
+function handleInsight(request, response, urldata) {
+	response.writeHead(200, {
+		'Content-Type': 'application/json'
+	});
+
+	var insight = {};
+	for(topic in topics) {
+		insight[topic] = {
+			faces: topics[topic].faces,
+			stack: topics[topic].stack
+		}
+	};
+
+	return response.end(
+		JSON.stringify(insight, null, "\t")
 	);
 }
 

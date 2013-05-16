@@ -1,6 +1,6 @@
 var
 	path = window.location.pathname,
-	topic = path.split('/')[3],
+	topic = decodeURI(path.split('/')[3]),
 	email = $.cookie('user'),
 	max_reconnects = 30,
 	socket = io.connect(window.location.protocol+'//'+window.location.host, {

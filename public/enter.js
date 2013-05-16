@@ -40,19 +40,16 @@ $(function() {
 				});
 			}, 250);
 		}
-	}).on('change', function() {
-		if($userTxt.val().length == 0) return;
-
-		$.cookie('user', $userTxt.val(), cookieOpts);
-		$.cookie('topic', $topicTxt.val(), cookieOpts);
-
-	}).trigger('change').trigger('keydown');
+	}).trigger('keydown');
 
 	$enterButton.on('mouseenter mouseleave', function(e) {
 		$enterButton.toggleClass('hover', e.type == 'mouseenter' && $enterButton.hasClass('enabled'));
 	});
 
 	$enterForm.on('submit', function(e) {
+		$.cookie('user', $userTxt.val(), cookieOpts);
+		$.cookie('topic', $topicTxt.val(), cookieOpts);
+
 		window.location.pathname = '/mitreden/bei/'+encodeURI($topicTxt.val());
 		e.preventDefault();
 	});
