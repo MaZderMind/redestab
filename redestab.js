@@ -93,8 +93,11 @@ srv.configure(function() {
 		var topic = topics[ident.topic];
 		if(!topic) return;
 
-		if(topic.stack.indexOf(ident.email) >= 0)
-			return;
+		for (var i = 0; i < topic.stack.length; i++) {
+			// already on stack
+			if(topic.stack[i].email == ident.email)
+				return;
+		};
 
 		console.log(ident.email+' wants to talk on topic '+ident.topic);
 		topic.stack.push({
