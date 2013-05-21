@@ -61,42 +61,67 @@ srv.configure(function() {
 		var topic = topics[ident.topic];
 		if(!topic) return;
 
-		topic.sockets.splice(topic.sockets.indexOf(socket), 1);
-		topic.faces.splice(topic.faces.indexOf(ident), 1);
+		topic.attendees.splice(topic.attendees.indexOf(ident), 1);
 
-		console.log('user '+ident.email+' left topic '+ident.topic+' (still '+topic.sockets.length+' talking on that topic)');
-		if(topic.sockets.length == 0) {
+		console.log('user '+ident.email+' left topic '+ident.topic+' (still '+topic.attendees.length+' talking on that topic)');
+		if(topic.attendees.length == 0) {
 			console.log('destroying topic '+ident.topic);
 			delete topics[ident.topic];
 		}
-
-		for (var i = 0; i < topic.sockets.length; i++) {
-			topic.sockets[i].emit('faces', topic.faces);
-		};
+		else sendUpdate(topic);
 	});
 
 	socket.on('ident', function(_ident) {
 		ident = _ident;
 		if(!topics[ident.topic]) {
 			console.log('creating topic '+ident.topic)
-			topics[ident.topic] = {faces: [], sockets: [], stack: []};
+			topics[ident.topic] = {attendees: [], stack: []};
 		}
 
 		console.log('user '+ident.email+' entered topic '+ident.topic)
 		var topic = topics[ident.topic];
 		ident.hash = mail2gravatarHash(ident.email);
-		topic.faces.push(ident);
-		topic.sockets.push(socket);
+		ident.socket = socket;
+		topic.attendees.push(ident);
 
-		for (var i = 0; i < topic.sockets.length; i++) {
-			topic.sockets[i].emit('faces', topic.faces);
-		};
+		sendUpdate(topic);
 	});
 
 	socket.on('want', function() {
-		console.log(ident.email+' wants to talk on topic '+ident.topic);
+		if(!ident) return;
+
+		var topic = topics[ident.topic];
+		if(!topic) return;
+
+		for (var i = 0; i < topic.stack.length; i++) {
+			// already on stack
+			if(topic.stack[i] == email)
+				return;
+
+			topic.stack.push(ident.email);
+
+			sendUpdate(topic);
+		};
 	});
 });
+
+function sendUpdate(topic)
+{
+	var faces = [];
+	for (var i = 0; i < topic.attendees.length; i++) {
+		faces.push({
+			email: topic.attendees[i].email,
+			hash: topic.attendees[i].hash,
+			state: 'tbd;'
+		});
+	};
+	for (var i = 0; i < topic.attendees.length; i++) {
+		topic.attendees[i].socket.emit('update', {
+			faces: faces,
+			stack: topic.stack
+		})
+	};
+}
 
 function handleApiCalls(request, response) {
 	var urldata = url.parse(request.url, true);
@@ -158,8 +183,17 @@ function handleInsight(request, response, urldata) {
 
 	var insight = {};
 	for(topic in topics) {
+		var attendees = [];
+		for (var i = 0; i < topics[topic].attendees.length; i++) {
+			attendees.push({
+				email: topics[topic].attendees[i].email,
+				hash: topics[topic].attendees[i].hash,
+				state: 'tbd;'
+			});
+		};
+
 		insight[topic] = {
-			faces: topics[topic].faces,
+			attendees: attendees,
 			stack: topics[topic].stack
 		}
 	};

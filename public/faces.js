@@ -19,7 +19,8 @@ $(function() {
 	$('title').text(topic + ' - ' + $('title').text());
 	$('h2').text(topic);
 
-	socket.on('faces', function(faces) {
+	socket.on('update', function(freshdata) {
+		var faces = freshdata.faces;
 		$facebar.html('');
 		for (var i = 0; i < faces.length; i++) {
 			var $face = $faceTpl.clone();
