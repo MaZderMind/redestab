@@ -14,12 +14,16 @@ $(function() {
 		$facebar = $('.facebar'),
 		$faceTpl = $facebar.find('.face').first().clone(),
 		$submit = $('body > button'),
-		$disconnected = $('.disconnected');
+		$disconnected = $('.disconnected'),
+		dtoffset = 0;
 
 	$('title').text(topic + ' - ' + $('title').text());
 	$('h2').text(topic);
 
 	socket.on('update', function(freshdata) {
+		dtoffset = (new Date()).getTime() - freshdata.dt;
+		console.log('Date/Time offset is now ', dtoffset, 'seconds');
+
 		var faces = freshdata.faces;
 		$facebar.html('');
 		for (var i = 0; i < faces.length; i++) {

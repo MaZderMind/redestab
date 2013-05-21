@@ -93,33 +93,37 @@ srv.configure(function() {
 		var topic = topics[ident.topic];
 		if(!topic) return;
 
-		for (var i = 0; i < topic.stack.length; i++) {
-			// already on stack
-			if(topic.stack[i] == email)
-				return;
+		if(topic.stack.indexOf(ident.email) >= 0)
+			return;
 
-			topic.stack.push(ident.email);
+		console.log(ident.email+' wants to talk on topic '+ident.topic);
+		topic.stack.push({
+			email: ident.email,
+			dt: (new Date()).getTime()
+		});
 
-			sendUpdate(topic);
-		};
+		sendUpdate(topic);
 	});
 });
 
 function sendUpdate(topic)
 {
-	var faces = [];
+	var freshdata = {
+		faces: [],
+		stack: topic.stack,
+		dt: (new Date()).getTime()
+	}
+
 	for (var i = 0; i < topic.attendees.length; i++) {
-		faces.push({
+		freshdata.faces.push({
 			email: topic.attendees[i].email,
 			hash: topic.attendees[i].hash,
 			state: 'tbd;'
 		});
 	};
+
 	for (var i = 0; i < topic.attendees.length; i++) {
-		topic.attendees[i].socket.emit('update', {
-			faces: faces,
-			stack: topic.stack
-		})
+		topic.attendees[i].socket.emit('update', freshdata);
 	};
 }
 
