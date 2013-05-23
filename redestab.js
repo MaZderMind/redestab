@@ -112,16 +112,15 @@ srv.configure(function() {
 function sendUpdate(topic)
 {
 	var freshdata = {
-		faces: [],
+		attendees: [],
 		stack: topic.stack,
 		dt: (new Date()).getTime()
 	}
 
 	for (var i = 0; i < topic.attendees.length; i++) {
-		freshdata.faces.push({
+		freshdata.attendees.push({
 			email: topic.attendees[i].email,
-			hash: topic.attendees[i].hash,
-			state: 'tbd;'
+			hash: topic.attendees[i].hash
 		});
 	};
 

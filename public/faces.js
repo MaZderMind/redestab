@@ -12,27 +12,70 @@ var
 $(function() {
 	var
 		$facebar = $('.facebar'),
-		$faceTpl = $facebar.find('.face').first().clone(),
+		$facetpl = $facebar.find('.face').first().remove(),
 		$submit = $('body > button'),
 		$disconnected = $('.disconnected'),
-		dtoffset = 0;
+		dtoffset = 0,
+		currentdata = {attendees: {}, stack: []};
 
 	$('title').text(topic + ' - ' + $('title').text());
 	$('h2').text(topic);
 
 	socket.on('update', function(freshdata) {
 		dtoffset = (new Date()).getTime() - freshdata.dt;
-		console.log('Date/Time offset is now ', dtoffset, 'seconds');
+		//console.log('Date/Time offset is now ', dtoffset, 'seconds');
 
-		var faces = freshdata.faces;
-		$facebar.html('');
-		for (var i = 0; i < faces.length; i++) {
-			var $face = $faceTpl.clone();
-			$face.find('.frame').css('background-image', 'url(http://www.gravatar.com/avatar/'+faces[i].hash+'?s=150&d=identicon&r=x)');
-			$face.find('.name').text(faces[i].email);
-			$face.find('.state').text(faces[i].state);
-			$face.appendTo($facebar);
-		};
+		var dropout = Object.keys(currentdata.attendees);
+
+		for (var i = 0; i < freshdata.attendees.length; i++) {
+			var
+				attendee = freshdata.attendees[i],
+				idx = dropout.indexOf(attendee.email);
+
+			if(idx == -1) {
+				console.log('ENTER', attendee.email)
+				currentdata.attendees[attendee.email] = attendee;
+
+				var $face = $facetpl.clone();
+				$face.find('.frame').css('background-image', 'url(http://www.gravatar.com/avatar/'+attendee.hash+'?s=150&d=identicon&r=x)');
+				$face.find('.name').text(attendee.email);
+				$face.data('email', attendee.email);
+				$face.css('opacity', 0);
+				attendee.$el = $face;
+				$face.appendTo($facebar)
+				$face.animate({
+					'opacity': 1
+				}, {
+					duration: 750
+				});
+			}
+			else {
+				console.log('KEEP', attendee.email)
+				dropout.splice(idx, 1);
+			}
+		}
+
+		for (var i = 0; i < dropout.length; i++) {
+			var attendee = currentdata.attendees[dropout[i]];
+
+			console.log('DROP', attendee.email);
+			attendee.$el.animate({
+				'opacity': 0
+			}, {
+				duration: 750,
+				complete: function() {
+					$(this).remove();
+				}
+			});
+
+			delete currentdata.attendees[attendee.email];
+		}
+
+/*
+*/
+
+		// compare the fesh stack with the old onw
+		//  move as necessary
 	});
 
 	var retrycnt = 0
