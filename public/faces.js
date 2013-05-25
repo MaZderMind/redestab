@@ -25,7 +25,9 @@ $(function() {
 		dtoffset = (new Date()).getTime() - freshdata.dt;
 		//console.log('Date/Time offset is now ', dtoffset, 'seconds');
 
-		var dropout = Object.keys(currentdata.attendees);
+		var
+			dropout = Object.keys(currentdata.attendees),
+			nAttendees = dropout.length;
 
 		for (var i = 0; i < freshdata.attendees.length; i++) {
 			var
@@ -40,17 +42,24 @@ $(function() {
 				$face.find('.frame').css('background-image', 'url(http://www.gravatar.com/avatar/'+attendee.hash+'?s=150&d=identicon&r=x)');
 				$face.find('.name').text(attendee.email);
 				$face.data('email', attendee.email);
-				$face.css('opacity', 0);
 				attendee.$el = $face;
 				$face.appendTo($facebar)
-				$face.animate({
-					'opacity': 1
-				}, {
-					duration: 750
-				});
+
+				// don't animate the initial occurrence of faces, only the ones coming later
+				if(nAttendees > 0) {
+					$face.css('opacity', 0).animate({
+						'opacity': 1
+					}, {
+						duration: 750
+					});
+				}
 			}
 			else {
-				console.log('KEEP', attendee.email)
+				var currentAttendee = currentdata.attendees[attendee.email];
+				if(currentAttendee.dropTimeout)
+					clearTimeout(currentAttendee.dropTimeout);
+
+				console.log('KEEP', currentAttendee.email, currentAttendee.dropTimeout)
 				dropout.splice(idx, 1);
 			}
 		}
@@ -58,17 +67,24 @@ $(function() {
 		for (var i = 0; i < dropout.length; i++) {
 			var attendee = currentdata.attendees[dropout[i]];
 
-			console.log('DROP', attendee.email);
-			attendee.$el.animate({
-				'opacity': 0
-			}, {
-				duration: 750,
-				complete: function() {
-					$(this).remove();
-				}
-			});
+			if(attendee.dropTimeout)
+				clearTimeout(attendee.dropTimeout);
 
-			delete currentdata.attendees[attendee.email];
+			attendee.dropTimeout = setTimeout(function() {
+				console.log('DROP', attendee.email);
+				attendee.$el.animate({
+					'opacity': 0
+				}, {
+					duration: 750,
+					complete: function() {
+						$(this).remove();
+					}
+				});
+
+				delete currentdata.attendees[attendee.email];
+			}, 750);
+			console.log('DROP (WAITING)', attendee.email, attendee.dropTimeout);
+
 		}
 
 /*
