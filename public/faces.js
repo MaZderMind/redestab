@@ -34,9 +34,9 @@ $(function() {
 			$face.find('.name').text(attendee.email);
 			$face.data('id', attendee.email);
 			$face.attr('data-id', attendee.email);
+			$face.toggleClass('myself', attendee.email == email);
 		}
 
-		console.log($newFacebar.html());
 		$facebar.quicksand($newFacebar.children('.face'));
 	});
 

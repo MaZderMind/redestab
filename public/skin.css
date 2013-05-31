@@ -140,6 +140,12 @@ h1 {
 .faces .face .frame {
   margin: 0 auto;
 }
+.faces .face.myself .frame {
+  border-top-color: #3D995B;
+  border-left-color: #3D995B;
+  border-bottom-color: #1B4429;
+  border-right-color: #1B4429;
+}
 .faces .face.talking {
   background-color: #599E56;
   border-radius: 10px;
