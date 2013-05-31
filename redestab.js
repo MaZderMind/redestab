@@ -119,12 +119,17 @@ srv.configure(function() {
 		for (var i = 0; i < topic.stack.length; i++) {
 			// already on stack
 			if(topic.stack[i].email == ident.email)
+			{
+				topic.stack.splice(i, 1);
+				sendUpdate(topic);
 				return;
+			}
 		};
 
 		console.log(ident.email+' wants to talk on topic '+ident.topic);
 		topic.stack.push({
 			email: ident.email,
+			hash: ident.hash,
 			dt: (new Date()).getTime()
 		});
 
@@ -217,7 +222,6 @@ function handleInsight(request, response, urldata) {
 			attendees.push({
 				email: topics[topic].attendees[i].email,
 				hash: topics[topic].attendees[i].hash,
-				state: 'tbd;'
 			});
 		};
 

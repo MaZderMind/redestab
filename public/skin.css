@@ -131,6 +131,10 @@ h1 {
 .faces h2 {
   color: #454545;
 }
+.faces .divider {
+  display: inline-block;
+  width: 75px;
+}
 .faces .face {
   display: inline-block;
   margin: 0 5px;
