@@ -61,24 +61,47 @@ srv.configure(function() {
 		var topic = topics[ident.topic];
 		if(!topic) return;
 
-		topic.attendees.splice(topic.attendees.indexOf(ident), 1);
+		var idleTimeout=750;
+		console.log('user '+ident.email+' about to leave topic '+ident.topic+', giving '+idleTimeout+'ms to recover');
 
-		console.log('user '+ident.email+' left topic '+ident.topic+' (still '+topic.attendees.length+' talking on that topic)');
-		if(topic.attendees.length == 0) {
-			console.log('destroying topic '+ident.topic);
-			delete topics[ident.topic];
-		}
-		else sendUpdate(topic);
+		ident.idleTimer = setTimeout(function() {
+			topic.attendees.splice(topic.attendees.indexOf(ident), 1);
+
+			console.log('user '+ident.email+' left topic '+ident.topic+' (still '+topic.attendees.length+' talking on that topic)');
+			if(topic.attendees.length == 0) {
+				console.log('destroying topic '+ident.topic);
+				delete topics[ident.topic];
+			}
+			else sendUpdate(topic);
+		}, idleTimeout);
 	});
 
 	socket.on('ident', function(_ident) {
+		// check if there already is an ident for that mail
+		if(topics[_ident.topic]) {
+			var topic = topics[_ident.topic];
+			for (var i = 0; i < topic.attendees.length; i++) {
+				if(topic.attendees[i].email == _ident.email && topic.attendees[i].idleTimer) {
+					ident = topic.attendees[i];
+					ident.socket = socket;
+					console.log('user '+ident.email+' was about to leave topic '+ident.topic+', overtaking ident');
+
+					clearTimeout(ident.idleTimer);
+					delete ident.idleTimer;
+
+					sendUpdate(topic);
+					return;
+				}
+			}
+		}
+
 		ident = _ident;
 		if(!topics[ident.topic]) {
 			console.log('creating topic '+ident.topic)
 			topics[ident.topic] = {attendees: [], stack: []};
 		}
 
-		console.log('user '+ident.email+' entered topic '+ident.topic)
+		console.log('user '+ident.email+' entered topic '+ident.topic);
 		var topic = topics[ident.topic];
 		ident.hash = mail2gravatarHash(ident.email);
 		ident.socket = socket;
