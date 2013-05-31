@@ -142,9 +142,8 @@ h1 {
 }
 .faces .face {
   display: inline-block;
-  margin: 0 5px;
-  padding: 15px;
   vertical-align: top;
+  width: 250px;
 }
 .faces .face .frame {
   margin: 0 auto;

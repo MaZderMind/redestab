@@ -128,8 +128,16 @@ srv.configure(function() {
 			// already on stack
 			if(topic.stack[i].email == ident.email)
 			{
-				console.log(ident.email+' don\'t want to talk on topic '+ident.topic+' anymore');
 				topic.stack.splice(i, 1);
+				if(i == 0) {
+					console.log(ident.email+' finished talking on topic '+ident.topic);
+					if(topic.stack.length > 0)
+						topic.stack[0].dt = (new Date()).getTime();
+				}
+				else {
+					console.log(ident.email+' don\'t want to talk on topic '+ident.topic+' anymore');
+				}
+
 				sendUpdate(topic);
 				return;
 			}

@@ -18,6 +18,35 @@ Array.prototype.uIndexOf = function(fn) {
 	return -1;
 }
 
+function formatTiming(msecs)
+{
+	var secs = Math.round(msecs / 1000, 0);
+	if(secs < 60) {
+		var
+			plural = (secs != 1);
+
+		return secs+(plural ? ' Sekunden' : ' Sekunde');
+	}
+	else if(secs < 60*60) {
+		var 
+			mins = parseInt(secs / 60),
+			plural = (mins != 1);
+
+		return mins+(plural ? ' Minuten' : ' Minute');
+	}
+	else if(secs < 60*60*24) {
+		var 
+			hours = parseInt(secs / 60 / 60),
+			mins = parseInt((secs % (60 * 60)) / 60),
+			hoursplural = (hours != 1);
+			hasmins = mins > 0,
+			minsplural = (mins != 1);
+
+		return hours+(hoursplural ? ' Stunden' : ' Stunde')+(hasmins ? ' und '+mins+(minsplural ? ' Minuten' : ' Minute') : '');
+	}
+	else return 'zu lag...';
+}
+
 
 
 $(function() {
@@ -53,10 +82,9 @@ $(function() {
 				email = $face.data('id'),
 				idx = stack.uIndexOf(function(el) { return el.email == email; });
 
-			console.log('updating', email);
 			if(idx != -1) {
-				var secs = (now - stack[idx].dt + dtoffset) / 1000;
-				$state.text((idx == 0 ? 'redet seit ' : 'wartet seit ') + secs + ' Sekunden');
+				var msecs = now - stack[idx].dt + dtoffset;
+				$state.text((idx == 0 ? 'redet seit ' : 'wartet seit ') + formatTiming(msecs));
 			}
 			else {
 				$state.text('');
@@ -65,7 +93,7 @@ $(function() {
 	}
 	function scheduleUpdateTimings() {
 		updateTimings();
-		setTimeout(scheduleUpdateTimings, 1000);
+		setTimeout(scheduleUpdateTimings, 500);
 	}
 	scheduleUpdateTimings();
 
@@ -103,6 +131,7 @@ $(function() {
 		});
 
 		stack = freshdata.stack;
+		updateTimings();
 	});
 
 	var retrycnt = 0
