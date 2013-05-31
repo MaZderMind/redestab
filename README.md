@@ -31,7 +31,7 @@ Mit Plänen ist's so eine Sache, aber folgende Punkte gedenke ich in jedem Fall 
  - [ ] Bei [Heroku](https://www.heroku.com/) unterbringen und mit ’ner Domain beglücken
  - [ ] Gestaltung von jemandem™ überarbeiten lassen
  - [ ] englische Sprache hinzufügen
- - 
+
 
 Kontakt
 -------
