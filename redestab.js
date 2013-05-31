@@ -31,6 +31,8 @@ String.prototype.endsWith = function(suffix) {
 	return (this.length >= suffix.length) && this.lastIndexOf(suffix) === this.length - suffix.length;
 }
 
+var port = process.env.PORT || 8080;
+console.log('creating http-server on port', port);
 var server = http.createServer(function(request, response) {
 
 	if(handleApiCalls(request, response)) return;
@@ -44,7 +46,7 @@ var server = http.createServer(function(request, response) {
 	}
 	else file.serve(request, response);
 
-}).listen(8080);
+}).listen(port);
 
 var srv = io.listen(server);
 srv.configure(function() {
