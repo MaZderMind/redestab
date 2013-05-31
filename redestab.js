@@ -67,6 +67,15 @@ srv.configure(function() {
 		ident.idleTimer = setTimeout(function() {
 			topic.attendees.splice(topic.attendees.indexOf(ident), 1);
 
+			for (var i = 0; i < topic.stack.length; i++) {
+				// already on stack
+				if(topic.stack[i].email == ident.email)
+				{
+					topic.stack.splice(i, 1);
+					break;
+				}
+			};
+
 			console.log('user '+ident.email+' left topic '+ident.topic+' (still '+topic.attendees.length+' talking on that topic)');
 			if(topic.attendees.length == 0) {
 				console.log('destroying topic '+ident.topic);
@@ -77,34 +86,33 @@ srv.configure(function() {
 	});
 
 	socket.on('ident', function(_ident) {
+		if(!topics[_ident.topic]) {
+			console.log('creating topic '+_ident.topic)
+			topics[_ident.topic] = {attendees: [], stack: []};
+		}
+
+		var topic = topics[_ident.topic];
+
 		// check if there already is an ident for that mail
-		if(topics[_ident.topic]) {
-			var topic = topics[_ident.topic];
-			for (var i = 0; i < topic.attendees.length; i++) {
-				if(topic.attendees[i].email == _ident.email && topic.attendees[i].idleTimer) {
-					ident = topic.attendees[i];
-					ident.socket = socket;
-					console.log('user '+ident.email+' was about to leave topic '+ident.topic+', overtaking ident');
+		for (var i = 0; i < topic.attendees.length; i++) {
+			if(topic.attendees[i].email == _ident.email && topic.attendees[i].idleTimer) {
+				ident = topic.attendees[i];
+				ident.socket = socket;
+				console.log('user '+ident.email+' was about to leave topic '+ident.topic+', overtaking ident');
 
-					clearTimeout(ident.idleTimer);
-					delete ident.idleTimer;
+				clearTimeout(ident.idleTimer);
+				delete ident.idleTimer;
 
-					sendUpdate(topic);
-					return;
-				}
+				sendUpdate(topic);
+				return;
 			}
 		}
 
 		ident = _ident;
-		if(!topics[ident.topic]) {
-			console.log('creating topic '+ident.topic)
-			topics[ident.topic] = {attendees: [], stack: []};
-		}
-
-		console.log('user '+ident.email+' entered topic '+ident.topic);
-		var topic = topics[ident.topic];
 		ident.hash = mail2gravatarHash(ident.email);
 		ident.socket = socket;
+
+		console.log('user '+ident.email+' entered topic '+ident.topic);
 		topic.attendees.push(ident);
 
 		sendUpdate(topic);
@@ -120,6 +128,7 @@ srv.configure(function() {
 			// already on stack
 			if(topic.stack[i].email == ident.email)
 			{
+				console.log(ident.email+' don\'t want to talk on topic '+ident.topic+' anymore');
 				topic.stack.splice(i, 1);
 				sendUpdate(topic);
 				return;
