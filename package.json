@@ -1,6 +1,10 @@
 {
   "name" : "redestab",
   "url" : "http://github.com/MaZderMind/redestab",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/MaZderMind/redestab.git"
+  },
   "author" : "Peter Körner <peter@mazdermind.de>",
   "license" : "BSD Whatever",
   "dependencies" : [
