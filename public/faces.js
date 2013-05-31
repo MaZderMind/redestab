@@ -70,7 +70,9 @@ $(function() {
 			$newFacebar.append($facetpl.instanciate(freshdata.attendees[i]));
 		}
 
-		$facebar.quicksand($newFacebar.children());
+		$facebar.quicksand($newFacebar.children(), function() {
+			$facebar.css({width: ''});
+		});
 	});
 
 	var retrycnt = 0

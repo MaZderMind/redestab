@@ -138,6 +138,7 @@ h1 {
   border-right: 8px solid #999999;
   height: 220px;
   width: 0px;
+  z-index: -99;
 }
 .faces .face {
   display: inline-block;
