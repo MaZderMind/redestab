@@ -54,6 +54,8 @@ srv.configure(function() {
 	srv.enable('browser client minificatsrvn');  // send minified client
 	srv.enable('browser client gzip');          // gzip the file
 	srv.set('log level', 1);                    // reduce logging
+	srv.set("transports", ["xhr-polling"]);
+	srv.set("polling duration", 10);
 
 }).sockets.on('connection', function(socket) {
 	var ident;
