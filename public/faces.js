@@ -2,6 +2,8 @@ var
 	path = window.location.pathname,
 	topic = decodeURI(path.split('/')[3]),
 	email = $.cookie('user'),
+	indexOnStack = -1,
+	stack = [],
 	max_reconnects = 30,
 	socket = io.connect(window.location.protocol+'//'+window.location.host, {
 		'reconnection limit': 5000,
@@ -42,16 +44,42 @@ $(function() {
 	$('title').text(topic + ' - ' + $('title').text());
 	$('h2').text(topic);
 
+	function updateTimings() {
+		var now = (new Date()).getTime() + dtoffset;
+		$facebar.find('.face').each(function() {
+			var
+				$face = $(this),
+				$state = $face.find('.state'),
+				email = $face.data('id'),
+				idx = stack.uIndexOf(function(el) { return el.email == email; });
+
+			console.log('updating', email);
+			if(idx != -1) {
+				var secs = (now - stack[idx].dt + dtoffset) / 1000;
+				$state.text((idx == 0 ? 'redet seit ' : 'wartet seit ') + secs + ' Sekunden');
+			}
+			else {
+				$state.text('');
+			}
+		})
+	}
+	function scheduleUpdateTimings() {
+		updateTimings();
+		setTimeout(scheduleUpdateTimings, 1000);
+	}
+	scheduleUpdateTimings();
+
 	socket.on('update', function(freshdata) {
 		dtoffset = (new Date()).getTime() - freshdata.dt;
-		//console.log('Date/Time offset is now ', dtoffset, 'seconds');
+		indexOnStack = freshdata.stack.uIndexOf(function(el) { return el.email == email; });
+		console.log('Date/Time offset is now ', dtoffset, 'seconds');
 
 		var $newFacebar = $('<div/>');
 
 		if(freshdata.stack.length > 0 && freshdata.stack[0].email == email) {
 			$submit.text('Ich habe fertig').removeClass('onstack');
 		}
-		else if(freshdata.stack.uIndexOf(function(el) { return el.email == email; }) != -1) {
+		else if(indexOnStack != -1) {
 			$submit.text('Neee, doch nich’ mehr').addClass('onstack');
 		}
 		else {
@@ -73,6 +101,8 @@ $(function() {
 		$facebar.quicksand($newFacebar.children(), function() {
 			$facebar.css({width: ''});
 		});
+
+		stack = freshdata.stack;
 	});
 
 	var retrycnt = 0
