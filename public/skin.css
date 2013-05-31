@@ -133,7 +133,11 @@ h1 {
 }
 .faces .divider {
   display: inline-block;
-  width: 75px;
+  margin-left: 35px;
+  margin-right: 35px;
+  border-right: 8px solid #999999;
+  height: 220px;
+  width: 0px;
 }
 .faces .face {
   display: inline-block;
