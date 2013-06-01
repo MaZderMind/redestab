@@ -48,6 +48,7 @@ $(function() {
 		$facetpl = $facebar.find('.face').first().remove(),
 		$submit = $('body > button'),
 		$disconnected = $('.disconnected'),
+		$connecting = $('.connecting'),
 		dtoffset = 0;
 
 
@@ -133,6 +134,7 @@ $(function() {
 	socket.on('connect', function() {
 		retrycnt = 0;
 		$disconnected.css('display', 'none');
+		$connecting.css('display', 'none');
 		socket.emit('ident', {'topic': topic, 'email': email});
 	});
 
@@ -151,5 +153,5 @@ $(function() {
 		socket.emit('want');
 	});
 
-	window.onunload
+	$connecting.css('display', 'block');
 });

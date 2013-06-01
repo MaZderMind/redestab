@@ -185,11 +185,13 @@ h1 {
 .faces button:active {
   background: #abb4b7;
 }
+.connecting,
 .disconnected {
   background-color: #444;
   opacity: 0.8;
   position: fixed;
   border-radius: 20px;
+  display: none;
   top: 10px;
   right: 10px;
   bottom: 10px;
@@ -199,6 +201,7 @@ h1 {
   /*display: none;*/
 
 }
+.connecting .text,
 .disconnected .text {
   text-align: center;
   width: 100%;
