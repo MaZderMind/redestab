@@ -44,7 +44,7 @@ function formatTiming(msecs)
 
 		return hours+(hoursplural ? ' Stunden' : ' Stunde')+(hasmins ? ' und '+mins+(minsplural ? ' Minuten' : ' Minute') : '');
 	}
-	else return 'zu lag...';
+	else return 'zu lang...';
 }
 
 
