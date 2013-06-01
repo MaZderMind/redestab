@@ -56,37 +56,38 @@ srv.configure(function() {
 	srv.set('log level', 1);                    // reduce logging
 	srv.set("transports", ["xhr-polling"]);
 	srv.set("polling duration", 10);
+	//srv.set("heartbeat interval", 15);
+	//srv.set("heartbeat timeout", 20);
 
 }).sockets.on('connection', function(socket) {
 	var ident;
+
 	socket.on('disconnect', function () {
 		if(!ident) return;
 
 		var topic = topics[ident.topic];
 		if(!topic) return;
 
-		var idleTimeout=750;
-		console.log('user '+ident.email+' about to leave topic '+ident.topic+', giving '+idleTimeout+'ms to recover');
+		ident.sockets.splice(ident.sockets.indexOf(socket), 1);
+		console.log('a socket left ident '+ident.email+' (still '+ident.sockets.length+' sockets on that ident)');
 
-		ident.idleTimer = setTimeout(function() {
-			topic.attendees.splice(topic.attendees.indexOf(ident), 1);
+		if(ident.sockets.length == 0) {
+			delete topic.attendees[ident.email];
+			var nAttendees = Object.keys(topic.attendees).length;
+			console.log('ident '+ident.email+' left topic '+ident.topic+' (still '+nAttendees+' talking on that topic)');
 
-			for (var i = 0; i < topic.stack.length; i++) {
-				// already on stack
-				if(topic.stack[i].email == ident.email)
-				{
-					topic.stack.splice(i, 1);
-					break;
-				}
-			};
+			var indexOnStack = topic.stack.indexOf(ident.email);
+			if(indexOnStack != -1) {
+				console.log('  also removing ident '+ident.email+' from stack of topic '+ident.topic+' (was on position '+indexOnStack+')');
+				topic.stack.splice(indexOnStack, 1);
+			}
 
-			console.log('user '+ident.email+' left topic '+ident.topic+' (still '+topic.attendees.length+' talking on that topic)');
-			if(topic.attendees.length == 0) {
+			if(nAttendees == 0) {
 				console.log('destroying topic '+ident.topic);
 				delete topics[ident.topic];
 			}
 			else sendUpdate(topic);
-		}, idleTimeout);
+		}
 	});
 
 	socket.on('ident', function(_ident) {
@@ -97,27 +98,19 @@ srv.configure(function() {
 
 		var topic = topics[_ident.topic];
 
-		// check if there already is an ident for that mail
-		for (var i = 0; i < topic.attendees.length; i++) {
-			if(topic.attendees[i].email == _ident.email && topic.attendees[i].idleTimer) {
-				ident = topic.attendees[i];
-				ident.socket = socket;
-				console.log('user '+ident.email+' was about to leave topic '+ident.topic+', overtaking ident');
-
-				clearTimeout(ident.idleTimer);
-				delete ident.idleTimer;
-
-				sendUpdate(topic);
-				return;
-			}
+		if(topic.attendees[_ident.email]) {
+			console.log('ident '+_ident.email+' is already on that topic, adding another socket')
+			ident = topic.attendees[_ident.email];
+			ident.sockets.push(socket);
 		}
+		else {
+			console.log('ident '+_ident.email+' entered topic '+_ident.topic);
+			ident = _ident;
+			ident.hash = mail2gravatarHash(ident.email);
+			ident.sockets = [socket];
 
-		ident = _ident;
-		ident.hash = mail2gravatarHash(ident.email);
-		ident.socket = socket;
-
-		console.log('user '+ident.email+' entered topic '+ident.topic);
-		topic.attendees.push(ident);
+			topic.attendees[ident.email] = ident;
+		}
 
 		sendUpdate(topic);
 	});
@@ -128,31 +121,24 @@ srv.configure(function() {
 		var topic = topics[ident.topic];
 		if(!topic) return;
 
-		for (var i = 0; i < topic.stack.length; i++) {
-			// already on stack
-			if(topic.stack[i].email == ident.email)
-			{
-				topic.stack.splice(i, 1);
-				if(i == 0) {
-					console.log(ident.email+' finished talking on topic '+ident.topic);
-					if(topic.stack.length > 0)
-						topic.stack[0].dt = (new Date()).getTime();
-				}
-				else {
-					console.log(ident.email+' don\'t want to talk on topic '+ident.topic+' anymore');
-				}
+		var indexOnStack = topic.stack.indexOf(ident.email);
+		if(indexOnStack == -1) {
+			console.log(ident.email+' wants to talk on topic '+ident.topic);
+			topic.stack.push(ident.email);
+			ident.dt = (new Date()).getTime();
+		}
+		else {
+			if(indexOnStack == 0)
+				console.log(ident.email+' finished talking on topic '+ident.topic);
+			else
+				console.log(ident.email+' don\'t want to talk on topic '+ident.topic+' anymore');
 
-				sendUpdate(topic);
-				return;
-			}
-		};
+			topic.stack.splice(indexOnStack, 1);
+			delete ident.dt;
 
-		console.log(ident.email+' wants to talk on topic '+ident.topic);
-		topic.stack.push({
-			email: ident.email,
-			hash: ident.hash,
-			dt: (new Date()).getTime()
-		});
+			if(topic.stack.length > 0)
+				topic.attendees[topic.stack[0]].dt = (new Date()).getTime();
+		}
 
 		sendUpdate(topic);
 	});
@@ -161,21 +147,26 @@ srv.configure(function() {
 function sendUpdate(topic)
 {
 	var freshdata = {
-		attendees: [],
+		attendees: {},
 		stack: topic.stack,
 		dt: (new Date()).getTime()
 	}
 
-	for (var i = 0; i < topic.attendees.length; i++) {
-		freshdata.attendees.push({
-			email: topic.attendees[i].email,
-			hash: topic.attendees[i].hash
-		});
+	for (var email in topic.attendees) {
+		var attendee = topic.attendees[email];
+		freshdata.attendees[email] = {
+			email: attendee.email,
+			hash: attendee.hash,
+			dt: attendee.dt
+		};
 	};
 
-	for (var i = 0; i < topic.attendees.length; i++) {
-		topic.attendees[i].socket.emit('update', freshdata);
-	};
+	for (var email in topic.attendees) {
+		var attendee = topic.attendees[email];
+		for (var i = 0; i < attendee.sockets.length; i++) {
+			attendee.sockets[i].emit('update', freshdata);
+		}
+	}
 }
 
 function handleApiCalls(request, response) {
@@ -237,19 +228,22 @@ function handleInsight(request, response, urldata) {
 	});
 
 	var insight = {};
-	for(topic in topics) {
-		var attendees = [];
-		for (var i = 0; i < topics[topic].attendees.length; i++) {
-			attendees.push({
-				email: topics[topic].attendees[i].email,
-				hash: topics[topic].attendees[i].hash,
-			});
-		};
-
+	for(var topic in topics) {
 		insight[topic] = {
-			attendees: attendees,
+			attendees: {},
 			stack: topics[topic].stack
 		}
+
+		for(var email in topics[topic].attendees) {
+			var attendee = topics[topic].attendees[email];
+
+			insight[topic].attendees[email] = {
+				email: attendee.email,
+				hash: attendee.hash,
+				dt: attendee.dt,
+				nSockets: attendee.sockets.length
+			};
+		};
 	};
 
 	return response.end(

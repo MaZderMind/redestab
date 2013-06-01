@@ -3,20 +3,13 @@ var
 	topic = decodeURI(path.split('/')[3]),
 	email = $.cookie('user'),
 	indexOnStack = -1,
-	stack = [],
+	lastdata,
 	max_reconnects = 30,
 	socket = io.connect(window.location.protocol+'//'+window.location.host, {
 		'reconnection limit': 5000,
-		'max reconnection attempts': max_reconnects
+		'max reconnection attempts': max_reconnects,
+		'sync disconnect on unload': true
 	});
-
-Array.prototype.uIndexOf = function(fn) {
-	for (var i = 0; i < this.length; i++) {
-		if(fn(this[i]))
-			return i;
-	};
-	return -1;
-}
 
 function formatTiming(msecs)
 {
@@ -79,11 +72,11 @@ $(function() {
 			var
 				$face = $(this),
 				$state = $face.find('.state'),
-				email = $face.data('id'),
-				idx = stack.uIndexOf(function(el) { return el.email == email; });
+				thisEmail = $face.data('id'),
+				idx = lastdata.stack.indexOf(thisEmail);
 
 			if(idx != -1) {
-				var msecs = now - stack[idx].dt + dtoffset;
+				var msecs = now - lastdata.attendees[lastdata.stack[idx]].dt + dtoffset;
 				$state.text((idx == 0 ? 'redet seit ' : 'wartet seit ') + formatTiming(msecs));
 			}
 			else {
@@ -99,12 +92,12 @@ $(function() {
 
 	socket.on('update', function(freshdata) {
 		dtoffset = (new Date()).getTime() - freshdata.dt;
-		indexOnStack = freshdata.stack.uIndexOf(function(el) { return el.email == email; });
+		indexOnStack = freshdata.stack.indexOf(email);
 		console.log('Date/Time offset is now ', dtoffset, 'seconds');
 
 		var $newFacebar = $('<div/>');
 
-		if(freshdata.stack.length > 0 && freshdata.stack[0].email == email) {
+		if(indexOnStack == 0) {
 			$submit.text('Ich habe fertig').removeClass('onstack');
 		}
 		else if(indexOnStack != -1) {
@@ -115,22 +108,24 @@ $(function() {
 		}
 
 		for (var i = 0; i < freshdata.stack.length; i++) {
-			$newFacebar.append($facetpl.instanciate(freshdata.stack[i]));
+			$newFacebar.append($facetpl.instanciate(freshdata.attendees[freshdata.stack[i]]));
 		}
 
 		if(freshdata.stack.length > 0)
 			$('<div class="divider" data-id="divider"/>').appendTo($newFacebar);
 
-		for (var i = 0; i < freshdata.attendees.length; i++) {
-			if(freshdata.stack.uIndexOf(function(el) { return el.email == freshdata.attendees[i].email }) != -1) continue;
-			$newFacebar.append($facetpl.instanciate(freshdata.attendees[i]));
+		for(var thisEmail in freshdata.attendees) {
+			if(freshdata.stack.indexOf(thisEmail) != -1)
+				continue;
+
+			$newFacebar.append($facetpl.instanciate(freshdata.attendees[thisEmail]));
 		}
 
 		$facebar.quicksand($newFacebar.children(), function() {
 			$facebar.css({width: ''});
 		});
 
-		stack = freshdata.stack;
+		lastdata = freshdata;
 		updateTimings();
 	});
 
@@ -155,4 +150,6 @@ $(function() {
 	$submit.on('click', function() {
 		socket.emit('want');
 	});
+
+	window.onunload
 });
