@@ -94,7 +94,7 @@ $(function() {
 	socket.on('update', function(freshdata) {
 		dtoffset = (new Date()).getTime() - freshdata.dt;
 		indexOnStack = freshdata.stack.indexOf(email);
-		console.log('Date/Time offset is now ', dtoffset, 'seconds');
+		console.log('Date/Time offset is now ', dtoffset / 1000, 'seconds');
 
 		var $newFacebar = $('<div/>');
 
