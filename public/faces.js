@@ -65,10 +65,11 @@ $(function() {
 	}
 
 	$('title').text(topic + ' - ' + $('title').text());
-	$('h2').text(topic);
+	$('h2').html('&ndash;&nbsp;'+topic+'&nbsp;&ndash;');
 
 	function updateTimings() {
 		var now = (new Date()).getTime() + dtoffset;
+		var firstHanging = true;
 		$facebar.find('.face').each(function() {
 			var
 				$face = $(this),
@@ -76,11 +77,14 @@ $(function() {
 				thisEmail = $face.data('id'),
 				idx = lastdata.stack.indexOf(thisEmail);
 
+			$face.toggleClass('talking', idx == 0);
+
 			if(idx != -1) {
 				var msecs = now - lastdata.attendees[lastdata.stack[idx]].dt + dtoffset;
 				$state.text((idx == 0 ? 'redet seit ' : 'wartet seit ') + formatTiming(msecs));
 			}
 			else {
+				firstHanging = false;
 				$state.text('');
 			}
 		})
@@ -112,9 +116,6 @@ $(function() {
 			$newFacebar.append($facetpl.instanciate(freshdata.attendees[freshdata.stack[i]]));
 		}
 
-		if(freshdata.stack.length > 0)
-			$('<div class="divider" data-id="divider"/>').appendTo($newFacebar);
-
 		for(var thisEmail in freshdata.attendees) {
 			if(freshdata.stack.indexOf(thisEmail) != -1)
 				continue;
@@ -130,8 +131,13 @@ $(function() {
 		updateTimings();
 	});
 
+	var connectingMsgTimeout = setTimeout(function() {
+		$connecting.css('display', 'block');
+	}, 750);
+
 	var retrycnt = 0
 	socket.on('connect', function() {
+		clearTimeout(connectingMsgTimeout);
 		retrycnt = 0;
 		$disconnected.css('display', 'none');
 		$connecting.css('display', 'none');
@@ -152,6 +158,4 @@ $(function() {
 	$submit.on('click', function() {
 		socket.emit('want');
 	});
-
-	$connecting.css('display', 'block');
 });

@@ -5,30 +5,9 @@ body {
   min-height: 100%;
 }
 body {
-  background: #f2f5f6;
-  /* Old browsers */
-
-  background: -moz-linear-gradient(top, #f2f5f6 0%, #e3eaed 37%, #c8d7dc 100%);
-  /* FF3.6+ */
-
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f5f6), color-stop(37%, #e3eaed), color-stop(100%, #c8d7dc));
-  /* Chrome,Safari4+ */
-
-  background: -webkit-linear-gradient(top, #f2f5f6 0%, #e3eaed 37%, #c8d7dc 100%);
-  /* Chrome10+,Safari5.1+ */
-
-  background: -o-linear-gradient(top, #f2f5f6 0%, #e3eaed 37%, #c8d7dc 100%);
-  /* Opera 11.10+ */
-
-  background: -ms-linear-gradient(top, #f2f5f6 0%, #e3eaed 37%, #c8d7dc 100%);
-  /* IE10+ */
-
-  background: linear-gradient(to bottom, #f2f5f6 0%, #e3eaed 37%, #c8d7dc 100%);
-  /* W3C */
-
-  background-position: fixed;
+  background: #f4f4f4;
   font-family: sans-serif;
-  color: #454545;
+  color: black;
   padding-bottom: 50px;
 }
 a {
@@ -43,48 +22,52 @@ h1 {
   font-family: 'Oleo Script Swash Caps', cursive;
   font-size: 100px;
   font-weight: normal;
-  margin: 0;
+  margin: 0 0 50px 0;
   padding: 10px;
-  color: #909B9F;
-  text-shadow: 0 -1px 1px #333333, 1px -2px 1px #333333, 0 1px 1px #ffffff;
-  -webkit-transform: rotate(270deg);
-  transform: rotate(270deg);
-  position: absolute;
-  left: -206px;
-  top: 210px;
+  color: #d8d8d8;
+  text-shadow: 0 3px 5px #8c8c8c;
 }
 .frame {
   width: 150px;
   height: 150px;
   display: block;
   overflow: hidden;
-  border-radius: 85px;
-  border-top: 8px solid #999999;
-  border-left: 8px solid #999999;
-  border-bottom: 8px solid #454545;
-  border-right: 8px solid #454545;
-  -webkit-box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
-  -moz-box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+  border-radius: 75px;
+  -webkit-box-shadow: 0 3px 5px rgba(20, 20, 20, 0.7);
+  -moz-box-shadow: 0 3px 5px rgba(20, 20, 20, 0.7);
+  background: #d8d8d8;
 }
 .enter {
   text-align: center;
-  padding-top: 30px;
+  padding-top: 25px;
+}
+.enter .center {
+  width: 576px;
+  background: red;
+  margin: 0 auto;
+  position: relative;
 }
 .enter .frame {
   font-size: 138px;
   text-align: center;
   font-family: 'entypo', sans-serif;
-  color: #909B9F;
-  text-shadow: 0 -1px 1px #333333, 1px -2px 1px #333333, 0 1px 1px #ffffff;
+  color: #d8d8d8;
+  text-shadow: 0 3px 5px #8c8c8c;
+  color: #0088bd;
   margin: 0 auto 50px auto;
+  position: absolute;
+  left: 0;
+  top: 70px;
 }
 .enter form {
   width: 300px;
-  margin: auto;
-  background: rgba(0, 0, 0, 0.07);
+  background: #d8d8d8;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 5px white;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 .enter input,
 .enter label {
@@ -98,8 +81,8 @@ h1 {
   width: 290px;
   margin-bottom: 25px;
   border: 0px solid transparent;
-  background: #909B9F;
-  box-shadow: -1px -1px 2px #333333, 0 1px 2px #ffffff;
+  background: #f4f4f4;
+  border: 1px solid #d8d8d8;
   padding: 5px;
   position: relative;
 }
@@ -107,14 +90,14 @@ h1 {
   border: 0px solid transparent;
   padding: 10px 20px;
   font-size: 30px;
-  background: #909B9F;
-  box-shadow: 0 0 3px #333333;
+  background: #f4f4f4;
   border-radius: 10px;
-  color: #595959;
+  color: #d8d8d8;
   margin-top: 20px;
 }
 .enter button.enabled {
-  color: #353535;
+  background: #0088bd;
+  color: white;
   cursor: pointer;
 }
 .enter button.hover {
@@ -128,8 +111,12 @@ h1 {
 .faces {
   text-align: center;
 }
+.faces h1 {
+  margin: 0;
+}
 .faces h2 {
-  color: #454545;
+  color: black;
+  margin: 0 0 30px 0;
 }
 .faces .divider {
   display: inline-block;
@@ -143,41 +130,44 @@ h1 {
 .faces .face {
   display: inline-block;
   vertical-align: top;
-  width: 250px;
+  width: 220px;
+  height: 260px;
+  padding: 20px 5px 5px 5px;
+  margin-right: 20px;
+  overflow: hidden;
+}
+.faces .face .state,
+.faces .face .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .faces .face .frame {
-  margin: 0 auto;
-}
-.faces .face.myself .frame {
-  border-top-color: #3D995B;
-  border-left-color: #3D995B;
-  border-bottom-color: #1B4429;
-  border-right-color: #1B4429;
-}
-.faces .face.talking {
-  background-color: #599E56;
-  border-radius: 10px;
-}
-.faces .face.wants {
-  background-color: #9B8655;
-  border-radius: 10px;
+  margin: 0 auto 20px auto;
 }
 .faces .face .state {
-  font-style: italic;
+  height: 45px;
+  font-size: 20px;
+}
+.faces .face.talking {
+  background: #0088bd;
+  border-radius: 10px;
+  color: white;
 }
 .faces .name {
   margin-top: 8px;
+  font-size: 15px;
 }
 .faces button {
-  margin-top: 100px;
   border: 0px solid transparent;
-  padding: 50px 150px;
-  font-size: 30px;
-  background: #909B9F;
+  padding: 18px 75px;
+  font-size: 23px;
+  text-transform: uppercase;
+  background: #0088bd;
   box-shadow: 0 0 3px #333333;
   border-radius: 10px;
-  color: #353535;
+  color: white;
   cursor: pointer;
+  margin-bottom: 50px;
 }
 .faces button:hover {
   box-shadow: 0 0 20px #ffffff;
