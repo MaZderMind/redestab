@@ -141,6 +141,14 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.faces .face.myself .name {
+  border-top: 3px solid #0088bd;
+  border-bottom: 3px solid #0088bd;
+}
+.faces .face .name {
+  margin: 0 5px;
+  padding: 3px 0;
+}
 .faces .face .frame {
   margin: 0 auto 20px auto;
 }
@@ -152,6 +160,10 @@ h1 {
   background: #0088bd;
   border-radius: 10px;
   color: white;
+}
+.faces .face.talking.myself .name {
+  border-top: 3px solid white;
+  border-bottom: 3px solid white;
 }
 .faces .name {
   margin-top: 8px;
