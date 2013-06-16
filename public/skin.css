@@ -213,3 +213,22 @@ h1 {
   margin-top: -70px;
   font-size: 45px;
 }
+.contact {
+  position: fixed;
+  z-index: 999;
+  bottom: 5px;
+  right: 10px;
+  font-family: 'entypo', sans-serif;
+  font-size: 30px;
+}
+.contact a {
+  display: block;
+  width: 36px;
+  height: 32px;
+  float: left;
+  text-decoration: none;
+  color: #d8d8d8;
+}
+.contact a:hover {
+  color: #0088bd;
+}
