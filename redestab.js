@@ -136,7 +136,8 @@ srv.configure(function() {
 			topic.stack.splice(indexOnStack, 1);
 			delete ident.dt;
 
-			if(topic.stack.length > 0)
+			// if the speaker has finished and has been removed, update the dt of the new speaker
+			if(indexOnStack == 0 && topic.stack.length > 0)
 				topic.attendees[topic.stack[0]].dt = (new Date()).getTime();
 		}
 
