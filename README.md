@@ -28,8 +28,8 @@ Weil isso. Erstmal. Das Konzept ist noch nicht ganz fertig und eventuell werden 
 Plan
 ----
 Mit Plänen ist's so eine Sache, aber folgende Punkte gedenke ich in jedem Fall noch zu erledigen:
- - [ ] Bei [Heroku](https://www.heroku.com/) unterbringen und mit ’ner Domain beglücken
- - [ ] Gestaltung von jemandem™ überarbeiten lassen
+ - [x] Bei [Heroku](https://www.heroku.com/) unterbringen und mit ’ner Domain beglücken (http://der-redestab.de und später http://the-talkingstick.net)
+ - [x] Gestaltung von jemandem™ überarbeiten lassen
  - [ ] englische Sprache hinzufügen
 
 
