@@ -174,11 +174,6 @@ h1 {
 			text-overflow: ellipsis;
 		}
 
-		&.myself .name {
-			border-top: 3px solid #0088bd;
-			border-bottom: 3px solid #0088bd;
-		}
-
 		.name {
 			margin: 0 5px;
 			padding: 3px 0;
@@ -186,6 +181,8 @@ h1 {
 
 		.frame {
 			margin: 0 auto 20px auto;
+			border: 5px solid transparent;
+			border-radius: ( @frameSz + 10px ) / 2;
 		}
 
 		.state {
@@ -193,14 +190,17 @@ h1 {
 			font-size: 20px;
 		}
 
+		&.myself .frame {
+			border-color: #0088bd;
+		}
+
 		&.talking {
 			background: #0088bd;
 			border-radius: 10px;
 			color: white;
 
-			&.myself .name {
-				border-top: 3px solid white;
-				border-bottom: 3px solid white;
+			&.myself .frame {
+				border-color: white;
 			}
 		}
 	}
